@@ -1,0 +1,58 @@
+.map-div {
+    height: 100%;
+    width: 100%;
+}
+
+#map, .leaflet-container, .map-div {
+    z-index: 0;
+}
+
+.geosearch {
+    border: none
+}
+
+.leaflet-bar {
+    border: none;
+}
+
+.glass {
+    background-color: white;
+    color: black;
+    font-weight: bold;
+}
+
+.results {
+    div {
+        color: black
+    }
+}
+
+.leaflet-control-layers-base {
+    label {
+        text-align: start;
+    }
+}
+
+
+.ReactModalPortal {
+    z-index: 2;
+}
+
+.ReactModal__Content {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 10rem;
+    width: 30rem;
+
+    form {
+        flex-direction: row;
+    }
+}
+
+h2 {
+    color: black
+}

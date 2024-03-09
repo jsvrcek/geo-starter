@@ -1,0 +1,79 @@
+version: '3'
+
+services:
+  postgis:
+    image: postgis/postgis:latest
+    environment:
+      POSTGRES_DB: geo
+      POSTGRES_USER: geo_user
+      POSTGRES_PASSWORD: geo_password
+    volumes:
+      - "postgis:/var/lib/postgresql/data"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "geo" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+
+  geoserver:
+    image: kartoza/geoserver:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgis
+    volumes:
+      - "geoserver:/opt/geoserver/data_dir"
+    environment:
+      DATABASE_URL: postgresql://geo_user:geo_password@postgis:5432/geo
+    links:
+      - postgis
+
+  api:
+    image: geostarter-api:latest
+    build:
+      dockerfile: api.Dockerfile
+      context: .
+    command: "gunicorn geostarter.wsgi:application -w 4 -b 0.0.0.0:8000 --no-sendfile --reload"
+    ports:
+      - "8000:8000"
+    volumes:
+      - './:/app/.'
+    working_dir: '/app'
+    depends_on:
+      - postgis
+    environment:
+      DATABASE_URL: postgis://geo_user:geo_password@postgis:5432/geo
+      DJANGO_SECRET_KEY: your_secret_key
+      DJANGO_DEBUG: "True"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl", "http://localhost:8000" ]
+      interval: 10s
+      timeout: 20s
+      retries: 5
+
+  ui:
+    image: geostarter-ui:latest
+    build:
+      dockerfile: ui.Dockerfile
+      context: .
+    ports:
+      - "5173:5173"
+    command:
+      - /home/node/app/node_modules/vite/bin/vite.js
+    volumes:
+      - './ui:/home/node/app/ui' # Don't copy whole directory, so we don't overwrite node_modules.
+      # - './:/app/.' # Use this one instead if you want to use local node modules without rebuilding over and over.
+    working_dir: '/home/node/app'
+    links:
+      - api
+    depends_on:
+      - api
+    healthcheck:
+      test: [ "CMD-SHELL", "curl", "http://localhost:5173" ]
+      interval: 10s
+      timeout: 20s
+      retries: 5
+
+volumes:
+  postgis:
+  geoserver:

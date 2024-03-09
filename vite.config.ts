@@ -10,10 +10,6 @@ export default defineConfig({
                 target: 'http://api:8000/',
                 changeOrigin: true,
             },
-            '/admin': {
-                target: 'http://api:8000/',
-                changeOrigin: true,
-            },
         },
         host: true,
     },

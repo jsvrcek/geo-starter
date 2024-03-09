@@ -28,7 +28,6 @@ DEBUG = os.getenv('DJANGO_DEBUG', False)
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'api', 'localhost:5173', 'localhost:8000']
 CORS_ALLOWED_ORIGINS = [f"http://{host}" for host in ALLOWED_HOSTS] + [f"https://{host}" for host in ALLOWED_HOSTS]
 
-print(f"Using trusted origins: {CORS_ALLOWED_ORIGINS}")
 # Application definition
 
 INSTALLED_APPS = [
